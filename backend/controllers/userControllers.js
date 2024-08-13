@@ -8,11 +8,11 @@ const generateToken = require("../config/generateToken");
 const allUsers = asyncHandler(async (req, res) => {
   const keyword = req.query.search
     ? {
-        $or: [
-          { name: { $regex: req.query.search, $options: "i" } },
-          { email: { $regex: req.query.search, $options: "i" } },
-        ],
-      }
+      $or: [
+        { name: { $regex: req.query.search, $options: "i" } },
+        { email: { $regex: req.query.search, $options: "i" } },
+      ],
+    }
     : {};
 
   const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
@@ -60,7 +60,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 //@description     Auth the user
-//@route           POST /api/users/login
+//@route           POST /api/user/login
 //@access          Public
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -82,4 +82,41 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { allUsers, registerUser, authUser };
+
+const updateProfile = asyncHandler(async (req, res) => {
+  const { userId, name, pic } = req.body;
+
+  // Find the user by ID
+  const user = await User.findById(userId);
+
+  // Check if user exists
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  // Update the user's name and picture if provided
+  if (name) {
+    user.name = name;
+  }
+  if (pic) {
+    user.pic = pic;
+  }
+
+  // Save the updated user
+  const updatedUser = await user.save();
+
+  // Respond with the updated user data
+  res.json({
+    _id: updatedUser._id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    isAdmin: updatedUser.isAdmin,
+    pic: updatedUser.pic,
+    token: generateToken(updatedUser._id), // Regenerate token if necessary
+  });
+});
+
+
+
+module.exports = { allUsers, registerUser, authUser, updateProfile };

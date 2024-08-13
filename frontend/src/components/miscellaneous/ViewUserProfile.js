@@ -7,14 +7,14 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
+    Button,
+    useDisclosure,
     IconButton,
     Text,
     Image,
-    useDisclosure,
 } from "@chakra-ui/react";
-import EditProfileModal from "./EditProfileModal";
 
-const ProfileModal = ({ user, children }) => {
+const ViewUserProfile = ({ user, children }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     return (
@@ -56,7 +56,7 @@ const ProfileModal = ({ user, children }) => {
                         </Text>
                     </ModalBody>
                     <ModalFooter>
-                        <EditProfileModal />
+                        <Button onClick={onClose}>Close</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
@@ -64,4 +64,4 @@ const ProfileModal = ({ user, children }) => {
     );
 };
 
-export default ProfileModal;
+export default ViewUserProfile;
